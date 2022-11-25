@@ -8,13 +8,15 @@ import { AppComponent } from './app.component';
 import { SearchComponent } from './search/search.component';
 import { VaccinationCenterComponent } from './vaccination-center/vaccination-center.component';
 import { VaccinationCenterListComponent } from './vaccination-center-list/vaccination-center-list.component';
+import { ErrorInfosComponent } from './error-infos/error-infos.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     SearchComponent,
     VaccinationCenterComponent,
-    VaccinationCenterListComponent
+    VaccinationCenterListComponent,
+    ErrorInfosComponent
   ],
   imports: [
     BrowserModule,
