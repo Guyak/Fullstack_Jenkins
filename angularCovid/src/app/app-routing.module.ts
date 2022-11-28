@@ -10,7 +10,7 @@ const routes: Routes = [
   { path: "centers", component: VaccinationCenterListComponent},
   { path: "centers/detail/:id", component: VaccinationCenterComponent},
   { path: "search", component: SearchComponent},
-  { path: "error", component: ErrorInfosComponent},
+  { path: "infos/429", component: ErrorInfosComponent},
   { path: "login", component: LoginComponent},
   { path: '', redirectTo: '/centers', pathMatch: 'full'},
 ];
