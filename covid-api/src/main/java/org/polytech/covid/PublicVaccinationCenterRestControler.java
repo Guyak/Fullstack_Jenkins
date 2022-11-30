@@ -32,13 +32,20 @@ public class PublicVaccinationCenterRestControler {
     final String remaining = "X-Rate-Limit-Remaining";
     final String retryAfter = "X-Rate-Limit-Retry-After-Seconds";
 
+    @CrossOrigin(exposedHeaders = {remaining, retryAfter})
     @GetMapping(path="api/public/centers")
     public ResponseEntity<List<VaccinationCenter>> getVaccinationCenter(
         @RequestParam(name="city", defaultValue = "") String city){
-            if(bucket.tryConsume(1)) { // Utilise un token
+            HttpHeaders headers = new HttpHeaders();
+            ConsumptionProbe probe = bucket.tryConsumeAndReturnRemaining(1);
+            if(probe.isConsumed()) { // Utilise un token
                 return ResponseEntity.ok(centerRepository.findAllByCityIgnoreCaseLike("%"+city+"%"));
             }
-            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).build();
+            long delaiEnSeconde = probe.getNanosToWaitForRefill() / 1_000_000_000;
+            headers.add(retryAfter, String.valueOf(delaiEnSeconde));
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                    .headers(headers)
+                    .build();
     }
 
     @CrossOrigin(exposedHeaders = {remaining, retryAfter})
