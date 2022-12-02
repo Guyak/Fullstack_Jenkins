@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: ${DB_LINK_COVID_API}
+    url: ${DB_COVID_API}
     username: root
     password: root
   jpa:
