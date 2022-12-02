@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Router } from '@angular/router';
+import { catchError, map, Observable } from 'rxjs';
 import { VaccinationCenter } from './vaccination-center';
 
 @Injectable({
@@ -15,13 +16,28 @@ export class VaccinationService {
     {id: 4, name: "Centre-Ville", address: "5, Rue Saint-Jean", postalCode: "54000", city: "Nancy", openingDate: new Date('2000-05-01')}
   ]
 
-  constructor(private httpClient: HttpClient) { }
+  constructor(
+    private httpClient: HttpClient,
+    private router: Router
+  ) { }
 
-  getAllVaccinationCenter(city: string) : Observable<VaccinationCenter[]>{
-    return this.httpClient.get<VaccinationCenter[]>("api/public/centers", {
-      params: {
-        "city": city
-      }
-    });
+  getAllVaccinationCenter(city: string): Observable<VaccinationCenter[]>{
+    return this.httpClient.get<VaccinationCenter[]>("api/public/centers",{observe: 'response'}).pipe(
+      map((resp)=>{
+        if(!!resp.body){
+          return resp.body
+        }
+        return []
+      }, { params: {
+          "city": city
+        }
+      }),
+      catchError((err) => {
+        console.log(err)
+        const temps =  err.headers.get('X-Rate-Limit-Retry-After-Seconds')
+        this.router.navigate(['infos/429', temps]);
+        return []
+      })
+    );
   }
 }
